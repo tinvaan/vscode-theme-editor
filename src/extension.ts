@@ -7,12 +7,7 @@ function colorThemes() {
         .filter(ext => ext.packageJSON.contributes?.themes)
         .map(ext => ext.packageJSON.contributes.themes
             .map((theme: Object) =>
-                Object({
-                    'id': theme.id,
-                    'label': theme.label,
-                    'uiTheme': theme.uiTheme,
-                    'uri': ext.packageJSON.extensionLocation
-                })
+                Object({ 'id': theme.id, 'label': theme.label })
             )
         )
         .reduce((previous, current) => previous.concat(current));
