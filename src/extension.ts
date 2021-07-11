@@ -17,8 +17,15 @@ function colorThemes() {
 export function activate(context: vscode.ExtensionContext) {
     let show = vscode.commands.registerCommand('miser.themes', () => {
         vscode.window.showQuickPick(colorThemes(), {
-            onDidSelectItem: (item: vscode.Event<void>) =>
-                vscode.window.showInformationMessage(JSON.stringify(item, null, 2)),
+            onDidSelectItem: async (item: vscode.Event<void>) => {
+                vscode.window.showInformationMessage(JSON.stringify(item, null, 2));
+
+                let uri = vscode.Uri.file('/home/harish/package.json');
+                let edit = new vscode.WorkspaceEdit();
+                edit.createFile(uri, { ignoreIfExists: true, overwrite: false });
+                await vscode.workspace.applyEdit(edit);
+                await vscode.window.showTextDocument(uri, { preview: false });
+            }
         });	
     });
 
