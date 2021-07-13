@@ -1,33 +1,30 @@
 
-import * as vscode from 'vscode';
+import { themes, populate, ColorTheme } from './addons';
+import {
+    Uri,
+    window,
+    commands,
+    workspace,
+    WorkspaceEdit,
+    ExtensionContext
+} from 'vscode';
 
 
-function colorThemes() {
-    return vscode.extensions.all
-        .filter(ext => ext.packageJSON.contributes?.themes)
-        .map(ext => ext.packageJSON.contributes.themes
-            .map((theme: { id: any; label: any; }) =>
-                Object({ 'id': theme.id, 'label': theme.label })
-            )
-        )
-        .reduce((previous, current) => previous.concat(current));
-}
-
-
-export function activate(context: vscode.ExtensionContext) {
-    let show = vscode.commands.registerCommand('miser.themes', () => {
-        const picker = vscode.window.createQuickPick();
-        picker.items = colorThemes();
+export function activate(context: ExtensionContext) {
+    let show = commands.registerCommand('miser.themes', () => {
+        const picker = window.createQuickPick();
+        picker.items = themes();
         picker.onDidAccept(async () => {
             const item = picker.activeItems[0];
             const themeFile = `${item.label}.jsonc`;
-            const edit = new vscode.WorkspaceEdit();
-            const uri = vscode.Uri.joinPath(
+            const edit = new WorkspaceEdit();
+            const uri = Uri.joinPath(
                 context.globalStorageUri, 'customizations', themeFile);
 
             edit.createFile(uri, { ignoreIfExists: true, overwrite: false });
-            await vscode.workspace.applyEdit(edit);
-            await vscode.window.showTextDocument(uri);
+            await workspace.applyEdit(edit);
+            await populate(uri, item as ColorTheme);
+            await window.showTextDocument(uri);
         });
         picker.show();
     });
