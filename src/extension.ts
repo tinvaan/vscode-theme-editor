@@ -5,6 +5,7 @@ import {
     window,
     commands,
     workspace,
+    TextDocument,
     WorkspaceEdit,
     ExtensionContext
 } from 'vscode';
@@ -29,7 +30,18 @@ export function activate(context: ExtensionContext) {
         picker.show();
     });
 
+    let save = workspace.onDidSaveTextDocument((event: TextDocument) => {
+        let config = workspace.getConfiguration;
+        let settings = JSON.parse(event.getText());
+        Object.keys(settings).forEach(section => {
+            let current = config(section),
+                modified = settings[section];
+            config().update(section, Object.assign(modified, current), true);
+        });
+    });
+
     context.subscriptions.push(show);
+    context.subscriptions.push(save);
 }
 
 
