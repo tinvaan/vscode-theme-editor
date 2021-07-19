@@ -10,7 +10,8 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:miser.themes"
+		"onCommand:miser.themes",
+		"onCustomEditor:themes.customize"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -18,6 +19,17 @@
 			{
 				"command": "miser.themes",
 				"title": "Theme Customizations"
+			}
+		],
+		"customEditors": [
+			{
+				"viewType": "themes.customize",
+				"displayName": "Customize Themes",
+				"selector": [
+					{
+						"filenamePattern": "*.jsonc"
+					}
+				]
 			}
 		]
 	},
