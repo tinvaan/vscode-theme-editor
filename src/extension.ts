@@ -1,48 +1,25 @@
 
-import { themes, populate, ColorTheme } from './addons';
-import {
-    Uri,
-    window,
-    commands,
-    workspace,
-    TextDocument,
-    WorkspaceEdit,
-    ExtensionContext
-} from 'vscode';
+import { ThemeEditor } from './editor';
+import { themes, ColorTheme } from './addons';
+import { Uri, window, commands, ExtensionContext } from 'vscode';
 
 
 export function activate(context: ExtensionContext) {
-    let show = commands.registerCommand('miser.themes', () => {
+    // Register custom editor
+    context.subscriptions.push(ThemeEditor.register(context));
+
+    // Register commands
+    context.subscriptions.push(commands.registerCommand('miser.themes', () => {
         const picker = window.createQuickPick();
         picker.items = themes();
         picker.onDidAccept(async () => {
-            const item = picker.activeItems[0];
-            const themeFile = `${item.label}.jsonc`;
-            const edit = new WorkspaceEdit();
-            const uri = Uri.joinPath(
-                context.globalStorageUri, 'customizations', themeFile);
+            let item = picker.activeItems[0] as ColorTheme,
+                theme = `${item.label}.jsonc`,
+                uri = Uri.joinPath(context.globalStorageUri, 'data', theme);
 
-            edit.createFile(uri, { ignoreIfExists: true, overwrite: false });
-            await workspace.applyEdit(edit);
-            await populate(uri, item as ColorTheme);
-            await window.showTextDocument(uri);
+            context.globalState.update('activeState', item);
+            commands.executeCommand('vscode.openWith', uri, ThemeEditor.viewType);
         });
         picker.show();
-    });
-
-    let save = workspace.onDidSaveTextDocument((event: TextDocument) => {
-        let config = workspace.getConfiguration;
-        let settings = JSON.parse(event.getText());
-        Object.keys(settings).forEach(section => {
-            let current = config(section),
-                modified = settings[section];
-            config().update(section, Object.assign(modified, current), true);
-        });
-    });
-
-    context.subscriptions.push(show);
-    context.subscriptions.push(save);
+    }));
 }
-
-
-export function deactivate() {}
