@@ -12,37 +12,42 @@ import {
 
 
 export function activate(context: ExtensionContext) {
-    let show = commands.registerCommand('miser.themes', () => {
+    const notepad = Uri.joinPath(context.globalStorageUri, 'notepad.jsonc');
+
+    const open = commands.registerCommand('miser.themes', () => {
         const picker = window.createQuickPick();
         picker.items = themes();
         picker.onDidAccept(async () => {
             const item = picker.activeItems[0];
-            const themeFile = `${item.label}.jsonc`;
             const edit = new WorkspaceEdit();
-            const uri = Uri.joinPath(
-                context.globalStorageUri, 'customizations', themeFile);
 
-            edit.createFile(uri, { ignoreIfExists: true, overwrite: false });
+            edit.createFile(notepad, { ignoreIfExists: true, overwrite: false });
             await workspace.applyEdit(edit);
-            await populate(uri, item as ColorTheme);
-            await window.showTextDocument(uri);
+            await populate(notepad, item as ColorTheme);
+            await window.showTextDocument(notepad);
         });
         picker.show();
     });
 
-    let save = workspace.onDidSaveTextDocument((event: TextDocument) => {
-        let config = workspace.getConfiguration;
-        let settings = JSON.parse(event.getText());
+    const save = workspace.onDidSaveTextDocument((document: TextDocument) => {
+        const config = workspace.getConfiguration,
+              settings = JSON.parse(document.getText());
         Object.keys(settings).forEach(section => {
-            let current = config(section),
-                modified = settings[section];
+            const current = config(section),
+                  modified = settings[section];
             config().update(section, Object.assign(modified, current), true);
         });
     });
 
-    context.subscriptions.push(show);
+    const close = workspace.onDidCloseTextDocument(async (document: TextDocument) => {
+        if (notepad.toString() === document.uri.toString()) {
+            const edit = new WorkspaceEdit();
+            edit.deleteFile(notepad);
+            await workspace.applyEdit(edit);
+        }
+    });
+
+    context.subscriptions.push(open);
     context.subscriptions.push(save);
+    context.subscriptions.push(close);
 }
-
-
-export function deactivate() {}

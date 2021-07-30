@@ -37,32 +37,29 @@ export const themes = () : Array<ColorTheme> => {
 
 export const populate = async (file: Uri, theme: ColorTheme) => {
     const key = "[" + theme.key + "]";
-    const override = (await fs.readFile(file)).toString();
-    if (!override) {
-        const placeholder = {
-            "workbench.colorCustomizations": {
-                [key]: settings(colors.workbench).get(key) ||
-                {
+    const placeholder = {
+        "workbench.colorCustomizations": {
+            [key]: settings(colors.workbench).get(key) ||
+            {
 
-                }
-            },
-            "editor.semanticTokenColorCustomizations": {
-                [key]: settings(colors.editor.semantics).get(key) ||
-                {
-                    "rules": {
-                            
-                    }
-                }
-            },
-            "editor.tokenColorCustomizations": {
-                [key]: settings(colors.editor.tokens).get(key) ||
-                {
-                    "textMateRules": [
+            }
+        },
+        "editor.semanticTokenColorCustomizations": {
+            [key]: settings(colors.editor.semantics).get(key) ||
+            {
+                "rules": {
 
-                    ]
                 }
             }
-        };
-        fs.writeFile(file, Buffer.from(JSON.stringify(placeholder, null, 2)));
-    }
+        },
+        "editor.tokenColorCustomizations": {
+            [key]: settings(colors.editor.tokens).get(key) ||
+            {
+                "textMateRules": [
+
+                ]
+            }
+        }
+    };
+    fs.writeFile(file, Buffer.from(JSON.stringify(placeholder, null, 2)));
 };
