@@ -1,5 +1,5 @@
 
-import { ThemeEditor } from './editor.text';
+import { ThemeEditor } from './editor.texteditor';
 import { themes, ColorTheme } from './addons';
 import { Uri, window, commands, ExtensionContext } from 'vscode';
 
