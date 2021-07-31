@@ -30,7 +30,7 @@ suite('Addons test suite', () => {
         populate(notepad, theme);
         const expected = (await fs.readFile(notepad)).toString();
 
-        assert.notStrictEqual(before, after);
+        assert.notStrictEqual(given, expected);
     });
 
     after(async () => {
