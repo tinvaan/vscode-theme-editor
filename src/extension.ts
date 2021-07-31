@@ -14,7 +14,7 @@ import {
 export function activate(context: ExtensionContext) {
     const notepad = Uri.joinPath(context.globalStorageUri, 'notepad.jsonc');
 
-    const open = commands.registerCommand('miser.themes', () => {
+    const open = commands.registerCommand('themes.select', () => {
         const picker = window.createQuickPick();
         picker.items = themes();
         picker.onDidAccept(async () => {

@@ -1,6 +1,6 @@
 {
-  "name": "miser",
-	"displayName": "miser",
+  "name": "theme-editor",
+	"displayName": "Theme Editor",
 	"description": "Editor color theme customizer.",
 	"version": "0.0.1",
 	"engines": {
@@ -10,14 +10,14 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:miser.themes"
+        "onCommand:themes.select"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "miser.themes",
-				"title": "Theme Customizations"
+				"command": "themes.select",
+				"title": "Pick a theme to customize"
 			}
 		]
 	},
